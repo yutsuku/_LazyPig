@@ -76,6 +76,20 @@ local CheckBoxTables = {
 		[3] = { "LazyPigCheckbox72", "Rare Roll" },
 		[4] = { "LazyPigCheckbox73", "Poor-Common Loot" }
 	},
+	
+	["Ahn'Qiraj Roll Automation"] = {
+		[0] = "LazyPigCheckboxGroupAQRoll",
+		[1] = { "LazyPigCheckbox102", "Need" },
+		[2] = { "LazyPigCheckbox103", "Greed" },
+		[3] = { "LazyPigCheckbox104", "Pass" }
+	},
+	
+	["Ahn'Qiraj Other classes Idols'"] = {
+		[0] = "LazyPigCheckboxGroupAQIdolRoll",
+		[1] = { "LazyPigCheckbox105", "Need" },
+		[2] = { "LazyPigCheckbox106", "Greed" },
+		[3] = { "LazyPigCheckbox107", "Pass" }
+	},
 }
 --Grey-Common Loot
 
@@ -137,9 +151,9 @@ function LazyPig_CreateOptionsFrame()
 	-- Option Frame
 	local frame = CreateFrame("Frame", "LazyPigOptionsFrame")
 	tinsert(UISpecialFrames,"LazyPigOptionsFrame")
-	frame:SetScale(.81)
+	--frame:SetScale(.81)
 
-	frame:SetWidth(480)
+	frame:SetWidth(720)
 	frame:SetHeight(428)
 	
 	frame:SetPoint("TOPLEFT", nil, "TOPLEFT", 250, -50)
@@ -252,6 +266,12 @@ function LazyPig_CreateOptionsFrame()
 
 	local str = "Single Choice Rules"
 	frame.cbgroup_singlechoise = CheckBoxGroup(frame, 250, -242, str, CheckBoxTables[str])
+	
+	local str = "Ahn'Qiraj Roll Automation"
+	frame.cbgroup_aqroll = CheckBoxGroup(frame, 480, -45, str, CheckBoxTables[str])	
+	
+	local str = "Ahn'Qiraj Other classes Idols'"
+	frame.cbgroup_aqidolroll = CheckBoxGroup(frame, 480, -107, str, CheckBoxTables[str])
 
 	return frame
 

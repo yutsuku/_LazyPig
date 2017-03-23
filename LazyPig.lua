@@ -32,7 +32,9 @@ LPCONFIG = {
 	SHIFTSPLIT = true, 
 	REZ = true, 
 	GOSSIP = true, 
-	SALVA = false
+	SALVA = false,
+	AQ = 2,
+	AQIDOLS = nil,
 }
 
 BINDING_HEADER_LP_HEADER = "_LazyPig";
@@ -160,7 +162,14 @@ local LazyPigMenuStrings = {
 		[98]= "Gossip Auto Processing",
 		[99]= "Character Auto-Save",
 		[100]= "Auto Dismount",
-		[101]= "Chat Spam Filter"
+		[101]= "Chat Spam Filter",
+		
+		[102]= "Need",
+		[103]= "Greed",
+		[104]= "Pass",
+		[105]= "Need",
+		[106]= "Greed",
+		[107]= "Pass",
 }
 
 function LazyPig_OnLoad()
@@ -527,6 +536,7 @@ function LazyPig_OnEvent(event)
 			
 	elseif(event == "START_LOOT_ROLL") then
 		LazyPig_ZGRoll(arg1)
+		LazyPig_AQRoll(arg1)
 	
 	elseif(event == "CHAT_MSG_LOOT") then
 		if (string.find(arg1 ,"You won") or string.find(arg1 ,"You receive")) and (string.find(arg1 ,"cffa335e") or string.find(arg1, "cff0070d") or string.find(arg1, "cffff840")) and not string.find(arg1 ,"Bijou") and not string.find(arg1 ,"Idol") and not string.find(arg1 ,"Shard") then
@@ -947,6 +957,107 @@ function LazyPig_ZGRoll(id)
 			return
 		end	
 	end	
+end
+
+local function tContains(table, item)
+       local index = 1;
+       while table[index] do
+               if ( item == table[index] ) then
+                       return 1;
+               end
+               index = index + 1;
+       end
+       return nil;
+end
+
+local function CanUseIdol(m_table, itemID)
+	local localizedClass, class = UnitClass("player")
+	class = strupper(class)
+	
+	if m_table[itemID] and tContains(m_table[itemID], class) then
+		return true
+	end
+	
+	return false
+end
+
+local item_aq_scarabs = {
+	20858, -- Stone Scarab
+	20859, -- Gold Scarab
+	20860, -- Silver Scarab
+	20861, -- Bronze Scarab
+	20862, -- Crystal Scarab
+	20863, -- Clay Scarab
+	20864, -- Bone Scarab
+	20865, -- Ivory Scarab
+}
+
+local item_aq_idols = {
+	[20866] = {"HUNTER", "ROGUE", "MAGE"}, 							-- Azure Idol
+	[20867] = {"WARRIOR", "ROGUE", "WARLOCK"}, 						-- Onyx Idol
+	[20868] = {"WARRIOR", "HUNTER", "PRIEST"}, 						-- Lambent Idol
+	[20869] = {"PALADIN", "HUNTER", "SHAMAN", "WARRIOR"}, 			-- Amber Idol
+	[20870] = {"PRIEST", "WARLOCK", "DRUID"}, 						-- Jasper Idol
+	[20871] = {"PALADIN", "PRIEST", "SHAMAN", "MAGE"}, 				-- Obsidian Idol
+	[20872] = {"PALADIN", "ROGUE", "SHAMAN", "DRUID"}, 				-- Vermillion Idol
+	[20873] = {"WARRIOR", "MAGE", "DRUID"}, 						-- Alabaster Idol
+	
+	[20874] = {"WARRIOR", "HUNTER", "ROGUE", "MAGE"}, 				-- Idol of the Sun
+	[20875] = {"WARRIOR", "ROGUE", "MAGE", "WARLOCK"}, 				-- Idol of Night
+	[20876] = {"WARRIOR", "PRIEST", "MAGE", "WARLOCK"}, 			-- Idol of Death
+	[20877] = {"PALADIN", "PRIEST", "SHAMAN", "MAGE", "WARLOCK"}, 	-- Idol of the Sage
+	[20878] = {"PALADIN", "PRIEST", "SHAMAN", "WARLOCK", "DRUID"}, 	-- Idol of Rebirth
+	[20879] = {"PALADIN", "HUNTER", "PRIEST", "SHAMAN", "DRUID"}, 	-- Idol of Life
+	[20881] = {"PALADIN", "HUNTER", "ROGUE", "SHAMAN", "DRUID"}, 	-- Idol of Strife
+	[20882] = {"WARRIOR", "HUNTER", "ROGUE", "DRUID"}, 				-- Idol of War
+}
+
+function LazyPig_AQRoll(id)
+	if not LPCONFIG.AQ and not LPCONFIG.AQIDOLS then return end
+	
+	local itemLink = GetLootRollItemLink(id)
+	local texture, name, count, quality = GetLootRollItemInfo(id)
+	local r, g, b, hex = GetItemQualityColor(quality)
+	local string_start, string_end, itemID = strfind(itemLink, "|Hitem:(%d+):%d+:%d+:%d+|h")
+	itemID = tonumber(itemID) or 0
+	
+	if LPCONFIG.AQ then
+		local txt = ""
+		if LPCONFIG.AQ == 1 then
+			txt = "NEED"
+		elseif LPCONFIG.AQ == 2 then
+			txt = "GREED"
+		elseif LPCONFIG.AQ == 0 then
+			txt = "PASS"
+		end
+		
+		if tContains(item_aq_scarabs, itemID) then
+			DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..txt.." "..itemLink)
+			RollOnLoot(id, LPCONFIG.AQ)
+		end
+		
+		if item_aq_idols[itemID] and CanUseIdol(item_aq_idols, itemID) then
+			DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..txt.." "..itemLink)
+			RollOnLoot(id, LPCONFIG.AQ)
+		end
+	end
+	
+	if LPCONFIG.AQIDOLS then
+		local txt = ""
+		if LPCONFIG.AQIDOLS == 1 then
+			txt = "NEED"
+		elseif LPCONFIG.AQIDOLS == 2 then
+			txt = "GREED"
+		elseif LPCONFIG.AQIDOLS == 0 then
+			txt = "PASS"
+		end
+		
+		if item_aq_idols[itemID] and not CanUseIdol(item_aq_idols, itemID) then
+			DEFAULT_CHAT_FRAME:AddMessage("LazyPig: Auto "..hex..txt.." "..itemLink)
+			RollOnLoot(id, LPCONFIG.AQIDOLS)
+		end
+	end
+
 end
 
 function LazyPig_GreenRoll()
@@ -1748,6 +1859,13 @@ function LazyPig_GetOption(num)
 	or num == 100 and LPCONFIG.DISMOUNT
 	or num == 101 and LPCONFIG.SPAM
 	
+	or num == 102 and LPCONFIG.AQ == 1
+	or num == 103 and LPCONFIG.AQ == 2
+	or num == 104 and LPCONFIG.AQ == 0
+	or num == 105 and LPCONFIG.AQIDOLS == 1
+	or num == 106 and LPCONFIG.AQIDOLS == 2
+	or num == 107 and LPCONFIG.AQIDOLS == 0
+	
 	or nil then
 		this:SetChecked(true);
 	else
@@ -1945,7 +2063,39 @@ function LazyPig_SetOption(num)
 	elseif num == 101 then
 		LPCONFIG.SPAM  = true
 		if not checked then LPCONFIG.SPAM  = nil end			
-		
+	-- AQ20/AQ40
+	elseif num == 102 then 
+		LPCONFIG.AQ = 1
+		if not checked then LPCONFIG.AQ = nil end
+		LazyPigMenuObjects[103]:SetChecked(nil)
+		LazyPigMenuObjects[104]:SetChecked(nil)
+	elseif num == 103 then 
+		LPCONFIG.AQ = 2
+		if not checked then LPCONFIG.AQ = nil end
+		LazyPigMenuObjects[102]:SetChecked(nil)
+		LazyPigMenuObjects[104]:SetChecked(nil)
+	elseif num == 104 then 
+		LPCONFIG.AQ = 0 
+		if not checked then LPCONFIG.AQ = nil end
+		LazyPigMenuObjects[102]:SetChecked(nil)
+		LazyPigMenuObjects[103]:SetChecked(nil)
+	-- AQ20/AQ40 Idols
+	elseif num == 105 then 
+		LPCONFIG.AQIDOLS = 1
+		if not checked then LPCONFIG.AQIDOLS = nil end
+		LazyPigMenuObjects[106]:SetChecked(nil)
+		LazyPigMenuObjects[107]:SetChecked(nil)
+	elseif num == 106 then 
+		LPCONFIG.AQIDOLS = 2
+		if not checked then LPCONFIG.AQIDOLS = nil end
+		LazyPigMenuObjects[105]:SetChecked(nil)
+		LazyPigMenuObjects[107]:SetChecked(nil)
+	elseif num == 107 then 
+		LPCONFIG.AQIDOLS = 0 
+		if not checked then LPCONFIG.AQIDOLS = nil end
+		LazyPigMenuObjects[105]:SetChecked(nil)
+		LazyPigMenuObjects[106]:SetChecked(nil)
+	
 	else
 		--DEFAULT_CHAT_FRAME:AddMessage("DEBUG: No num assigned - "..num)
 	end
