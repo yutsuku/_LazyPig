@@ -544,7 +544,14 @@ function LazyPig_OnEvent(event)
 		end
 	
 	elseif(event == "UI_ERROR_MESSAGE") then
-		if(string.find(arg1, "mounted") or string.find(arg1, "while silenced")) and LPCONFIG.DISMOUNT then
+		if(string.find(arg1, "mounted") or 
+		arg1 == SPELL_FAILED_NOT_SHAPESHIFT or 
+		arg1 == SPELL_NOT_SHAPESHIFTED or 
+		arg1 == ERR_CANT_INTERACT_SHAPESHIFTED or 
+		arg1 == ERR_NOT_WHILE_SHAPESHIFTED or 
+		arg1 == ERR_NO_ITEMS_WHILE_SHAPESHIFTED or
+		string.find(arg1, "while silenced")) and 
+		LPCONFIG.DISMOUNT then
 			UIErrorsFrame:Clear()
 			LazyPig_Dismount()
 		end
@@ -1286,12 +1293,19 @@ function LazyPig_Dismount()
 		local index, untilCancelled = GetPlayerBuff(counter)
 		LazyPig_Buff_Tooltip:SetPlayerBuff(index)
 		local desc = LazyPig_Buff_TooltipTextLeft2:GetText()
+		local title = LazyPig_Buff_TooltipTextLeft1:GetText()
 		if desc then
 			_, _, speed = string.find(desc, tooltipfind) 
 			if speed then
 				CancelPlayerBuff(counter)
 				return
 			end	
+		end
+		if title then
+			if title == "Ghost Wolf" then
+				CancelPlayerBuff(counter)
+				return
+			end
 		end
 		counter = counter + 1
 	end
