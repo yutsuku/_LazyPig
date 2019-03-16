@@ -35,6 +35,7 @@ LPCONFIG = {
 	SALVA = false,
 	AQ = 2,
 	AQIDOLS = nil,
+	INSTANTLOGOUT = false
 }
 
 BINDING_HEADER_LP_HEADER = "_LazyPig";
@@ -121,12 +122,15 @@ local LazyPigMenuStrings = {
 		[00]= "Need",
 		[01]= "Greed",
 		[02]= "Pass",
+
 		[10]= "Need",
 		[11]= "Greed",
 		[12]= "Pass",
+
 		[20]= "Dungeon",
 		[21]= "Raid",
 		[22]= "Battleground",
+
 		[23]= "Mute Permanently",
 		[30]= "GuildMates",
 		[31]= "Friends",
@@ -170,6 +174,8 @@ local LazyPigMenuStrings = {
 		[105]= "Need",
 		[106]= "Greed",
 		[107]= "Pass",
+		
+		[1100]= "Enabled",
 }
 
 function LazyPig_OnLoad()
@@ -220,7 +226,8 @@ function LazyPig_OnUpdate()
 	elseif not altstatus and not ctrlstatus or altstatus and ctrlstatus then 
 		ctrltime = 0
 		alttime = 0
-	end	
+	end
+
 	if ctrlstatus and not shiftstatus and altstatus and current_time > ctrlalttime then
 		ctrlalttime = current_time + 0.75
 	elseif ctrlstatus and shiftstatus and not altstatus and current_time > ctrlshifttime then
@@ -250,7 +257,9 @@ function LazyPig_OnUpdate()
 		--]]
 		if ctrlstatus and shiftstatus and altstatus and current_time > delayaction then
 			delayaction = current_time + 1
-			Logout();
+			if LPCONFIG.INSTANTLOGOUT then
+				Logout();
+			end
 		elseif ctrlstatus and not shiftstatus and altstatus and not auctionstatus and not mailstatus and current_time > delayaction then	
 			if tradestatus then
 				AcceptTrade();
@@ -1830,10 +1839,12 @@ function LazyPig_GetOption(num)
 
 	if num == 00 and LPCONFIG.GREEN == 1
 	or num == 01 and LPCONFIG.GREEN == 2 
-	or num == 02 and LPCONFIG.GREEN == 0 
+	or num == 02 and LPCONFIG.GREEN == 0
+	
 	or num == 10 and LPCONFIG.ZG == 1		
 	or num == 11 and LPCONFIG.ZG == 2
 	or num == 12 and LPCONFIG.ZG == 0
+	
 	or num == 20 and LPCONFIG.WORLDDUNGEON
 	or num == 21 and LPCONFIG.WORLDRAID
 	or num == 22 and LPCONFIG.WORLDBG
@@ -1854,6 +1865,7 @@ function LazyPig_GetOption(num)
 	
 	or num == 60 and LPCONFIG.SALVA == 1
 	or num == 61 and LPCONFIG.SALVA == 2
+	
 	or num == 90 and LPCONFIG.SUMM
 	
 	or num == 70 and LPCONFIG.SPAM
@@ -1876,9 +1888,12 @@ function LazyPig_GetOption(num)
 	or num == 102 and LPCONFIG.AQ == 1
 	or num == 103 and LPCONFIG.AQ == 2
 	or num == 104 and LPCONFIG.AQ == 0
+	
 	or num == 105 and LPCONFIG.AQIDOLS == 1
 	or num == 106 and LPCONFIG.AQIDOLS == 2
 	or num == 107 and LPCONFIG.AQIDOLS == 0
+	
+	or num == 1100 and LPCONFIG.INSTANTLOGOUT
 	
 	or nil then
 		this:SetChecked(true);
@@ -2043,7 +2058,7 @@ function LazyPig_SetOption(num)
 	elseif num == 91 then 
 		LPCONFIG.LOOT = true
 		if not checked then LPCONFIG.LOOT = nil end
-	elseif num == 92 then 
+	elseif num == 92 then
 		LPCONFIG.RIGHT = true
 		if not checked then LPCONFIG.RIGHT = nil end
 		MailtoCheck(LPCONFIG.RIGHT)
@@ -2077,6 +2092,7 @@ function LazyPig_SetOption(num)
 	elseif num == 101 then
 		LPCONFIG.SPAM  = true
 		if not checked then LPCONFIG.SPAM  = nil end			
+
 	-- AQ20/AQ40
 	elseif num == 102 then 
 		LPCONFIG.AQ = 1
@@ -2093,6 +2109,7 @@ function LazyPig_SetOption(num)
 		if not checked then LPCONFIG.AQ = nil end
 		LazyPigMenuObjects[102]:SetChecked(nil)
 		LazyPigMenuObjects[103]:SetChecked(nil)
+
 	-- AQ20/AQ40 Idols
 	elseif num == 105 then 
 		LPCONFIG.AQIDOLS = 1
@@ -2109,6 +2126,10 @@ function LazyPig_SetOption(num)
 		if not checked then LPCONFIG.AQIDOLS = nil end
 		LazyPigMenuObjects[105]:SetChecked(nil)
 		LazyPigMenuObjects[106]:SetChecked(nil)
+
+	elseif num == 1100 then 
+		LPCONFIG.INSTANTLOGOUT = true
+		if not checked then LPCONFIG.INSTANTLOGOUT = nil end	
 	
 	else
 		--DEFAULT_CHAT_FRAME:AddMessage("DEBUG: No num assigned - "..num)

@@ -1,20 +1,13 @@
 local CheckBoxTables = {
 	["Green Items Roll [Ctrl-Alt]"] = {
-		[0] = "LazyPigCheckboxGroupGreedRoll",
+		[0] = "LazyPigCheckboxGroup_GreedRoll",
 		[1] = { "LazyPigCheckbox00", "Need" },
 		[2] = { "LazyPigCheckbox01", "Greed" },
 		[3] = { "LazyPigCheckbox02", "Pass" }
 	},
 
-	["Zul'Gurub Roll Automation"] = {
-		[0] = "LazyPigCheckboxGroupZGRoll",
-		[1] = { "LazyPigCheckbox10", "Need" },
-		[2] = { "LazyPigCheckbox11", "Greed" },
-		[3] = { "LazyPigCheckbox12", "Pass" }
-	},
-
 	["World Chat Mute"] = {
-		[0] = "LazyPigCheckboxGroupWorldChatMute",
+		[0] = "LazyPigCheckboxGroup_WorldChatMute",
 		[1] = { "LazyPigCheckbox20", "Dungeons" },
 		[2] = { "LazyPigCheckbox21", "Raids" },
 		[3] = { "LazyPigCheckbox22", "Battlegrounds" },
@@ -22,7 +15,7 @@ local CheckBoxTables = {
 	},
 
 	["Battlegrounds Automation"] = {
-		[0] = "LazyPigCheckboxGroupBGAutomation",
+		[0] = "LazyPigCheckboxGroup_BGAutomation",
 		[1] = { "LazyPigCheckbox50", "Enter Battleground", "Enter the Battleground as soon as the queue popup" },
 		[2] = { "LazyPigCheckbox51", "Leave Battleground", "Leave the Battleground as soon as it finish"},
 		[3] = { "LazyPigCheckbox52", "Queue Battleground", "Join the queue as soon as the BattleMaster is right-clicked" },
@@ -32,20 +25,20 @@ local CheckBoxTables = {
 	},
 	
 	["Smart Salvation Remover"] = {
-		[0] = "LazyPigCheckboxGroupSalvationRemover",
+		[0] = "LazyPigCheckboxGroup_SalvationRemover",
 		[1] = { "LazyPigCheckbox60", "Always" },
 		[2] = { "LazyPigCheckbox61", "Warrior Shield/Druid Bear" },
 	},
 	
 	["Nameplates Display Rules"] = {
-		[0] = "LazyPigCheckboxGroupNameplates",
+		[0] = "LazyPigCheckboxGroup_Nameplates",
 		[1] = { "LazyPigCheckbox40", "Show Friends" },
 		[2] = { "LazyPigCheckbox41", "Show Enemies" },
 		[3] = { "LazyPigCheckbox42", "Hide if Unchecked" }
 	},
 
 	["Group Invite Accept Rules"] = {
-		[0] = "LazyPigCheckboxGroupGroupInvite",
+		[0] = "LazyPigCheckboxGroup_GroupInvite",
 		[1] = { "LazyPigCheckbox30", "GuildMates" },
 		[2] = { "LazyPigCheckbox31", "Friends" },
 		[3] = { "LazyPigCheckbox32", "Strangers" },
@@ -53,7 +46,7 @@ local CheckBoxTables = {
 	},
 
 	["Single Choice Rules"] = {
-		[0] = "LazyPigCheckboxGroupSingleChoice",
+		[0] = "LazyPigCheckboxGroup_SingleChoice",
 		[1] = { "LazyPigCheckbox90", "Summon Auto Accept", "If checked summons will be accepted before they expire" },
 		[2] = { "LazyPigCheckbox91", "Loot Window Auto Position", "Position the loot window under the mouse-cursor"},
 		[3] = { "LazyPigCheckbox92", "Improved Right Click", "Right Click to Drag and Drop Items into Mail, Trade, Auction Frames. Alt + Right Click results search auction for that item" },
@@ -69,26 +62,40 @@ local CheckBoxTables = {
 		--[12] = { "LazyPigCheckbox102", "Block Battleground Quest Sharing", "Really? No more 'Stable' spam?" }
 	},
 	
-		["Chat Filter"] = {
-		[0] = "LazyPigCheckboxChatFilter",
+	["Chat Filter"] = {
+		[0] = "LazyPigCheckboxGroup_ChatFilter",
 		[1] = { "LazyPigCheckbox70", "Players' Spam" },
 		[2] = { "LazyPigCheckbox71", "Uncommon Roll" },
 		[3] = { "LazyPigCheckbox72", "Rare Roll" },
 		[4] = { "LazyPigCheckbox73", "Poor-Common Loot" }
 	},
+
+	["Zul'Gurub Roll Automation"] = {
+		[0] = "LazyPigCheckboxGroup_ZGRoll",
+		[1] = { "LazyPigCheckbox10", "Need" },
+		[2] = { "LazyPigCheckbox11", "Greed" },
+		[3] = { "LazyPigCheckbox12", "Pass" }
+	},
 	
 	["Ahn'Qiraj Roll Automation"] = {
-		[0] = "LazyPigCheckboxGroupAQRoll",
+		[0] = "LazyPigCheckboxGroup_AQRoll",
 		[1] = { "LazyPigCheckbox102", "Need" },
 		[2] = { "LazyPigCheckbox103", "Greed" },
 		[3] = { "LazyPigCheckbox104", "Pass" }
 	},
 	
 	["Ahn'Qiraj Other classes Idols'"] = {
-		[0] = "LazyPigCheckboxGroupAQIdolRoll",
+		[0] = "LazyPigCheckboxGroup_AQIdolRoll",
 		[1] = { "LazyPigCheckbox105", "Need" },
 		[2] = { "LazyPigCheckbox106", "Greed" },
 		[3] = { "LazyPigCheckbox107", "Pass" }
+	},
+	
+	-- new options with new-style codifications follow below
+	
+	["Instant Logout [Ctrl-Alt-Shift]"] = {
+		[0] = "LazyPigCheckboxGroup_InstantLogout",
+		[1] = { "LazyPigCheckbox1100", "Enabled" }
 	},
 }
 --Grey-Common Loot
@@ -242,18 +249,18 @@ function LazyPig_CreateOptionsFrame()
 
 	local str = "Green Items Roll [Ctrl-Alt]"
 	frame.cbgroup_greedroll = CheckBoxGroup(frame, 20, -45, str, CheckBoxTables[str])
-	
-	local str = "Zul'Gurub Roll Automation"
-	frame.cbgroup_zgroll = CheckBoxGroup(frame, 20, -107, str, CheckBoxTables[str])
+
+	local str = "Instant Logout [Ctrl-Alt-Shift]"
+	frame.cbgroup_instantlogout = CheckBoxGroup(frame, 20, -107, str, CheckBoxTables[str])
 
 	local str = "World Chat Mute"
-	frame.cbgroup_worldchatmute = CheckBoxGroup(frame, 20, -168, str, CheckBoxTables[str])
+	frame.cbgroup_worldchatmute = CheckBoxGroup(frame, 20, -139, str, CheckBoxTables[str])
 	
 	local str = "Battlegrounds Automation"
-	frame.cbgroup_bgautomation = CheckBoxGroup(frame, 20, -244, str, CheckBoxTables[str])
+	frame.cbgroup_bgautomation = CheckBoxGroup(frame, 20, -215, str, CheckBoxTables[str])
 	
 	local str = "Nameplates Display Rules"
-	frame.cbgroup_nameplates = CheckBoxGroup(frame, 20, -348, str, CheckBoxTables[str])
+	frame.cbgroup_nameplates = CheckBoxGroup(frame, 20, -319, str, CheckBoxTables[str])
 	
 	local str = "Smart Salvation Remover"
 	frame.cbgroup_salvationremover = CheckBoxGroup(frame, 250, -195, str, CheckBoxTables[str])
@@ -267,12 +274,15 @@ function LazyPig_CreateOptionsFrame()
 	local str = "Single Choice Rules"
 	frame.cbgroup_singlechoise = CheckBoxGroup(frame, 250, -242, str, CheckBoxTables[str])
 	
+    local str = "Zul'Gurub Roll Automation"
+	frame.cbgroup_zgroll = CheckBoxGroup(frame, 480, -45, str, CheckBoxTables[str])
+	
 	local str = "Ahn'Qiraj Roll Automation"
-	frame.cbgroup_aqroll = CheckBoxGroup(frame, 480, -45, str, CheckBoxTables[str])	
+	frame.cbgroup_aqroll = CheckBoxGroup(frame, 480, -107, str, CheckBoxTables[str])	
 	
 	local str = "Ahn'Qiraj Other classes Idols'"
-	frame.cbgroup_aqidolroll = CheckBoxGroup(frame, 480, -107, str, CheckBoxTables[str])
-
+	frame.cbgroup_aqidolroll = CheckBoxGroup(frame, 480, -168, str, CheckBoxTables[str])
+	
 	return frame
 
 end
